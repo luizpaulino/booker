@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: booker
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: booker
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME:3264d65b1f3d76}
+    password: ${MAIL_PASSWORD:0bb36eac0e7e92}
+    properties:
+      mail:
+        smtp:
+          from: ${MAIL_FROM:lp.luizpaulino@gmail.com}
+          auth: true
+          starttls:
+            enable: true
+server:
+  servlet:
+    context-path: /booker
+  port: 8080

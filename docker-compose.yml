@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  booker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: booker:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - booker-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"  # Map container port 27018 to host port 27018
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - booker-network
+
+networks:
+  booker-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
