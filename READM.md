@@ -1,0 +1,1 @@
+Link do swagger público: https://app.swaggerhub.com/apis/luizpaulino5/Booker/1.0.0

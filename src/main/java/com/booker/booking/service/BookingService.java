@@ -11,6 +11,7 @@ import com.booker.items.service.ItemService;
 import com.booker.location.dto.response.RoomResponse;
 import com.booker.location.service.LocationService;
 import com.booker.location.service.RoomService;
+import com.booker.shared.exception.models.BookerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,7 @@ public class BookingService {
                 bookingRequest.getCheckInDate(),
                 bookingRequest.getCheckOutDate()
         )) {
-            throw new IllegalArgumentException("Selected rooms are not available for the given dates");
+            throw new BookerException("Selected rooms are not available for the given dates");
         }
 
         int totalDays = bookingRequest.getCheckOutDate().compareTo(bookingRequest.getCheckInDate());
@@ -104,7 +105,7 @@ public class BookingService {
 
     public BookingResponse getBookingById(String id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found with id: " + id));
+                .orElseThrow(() -> new BookerException("Booking not found with id: " + id));
         return BookingResponse.fromBooking(booking);
     }
 
@@ -141,7 +142,7 @@ public class BookingService {
                 .sum();
 
         if (totalCapacity < bookingRequest.getNumberOfPeople()) {
-            throw new IllegalArgumentException("Total capacity of selected rooms is less than number of people");
+            throw new BookerException("Total capacity of selected rooms is less than number of people");
         }
 
         return rooms.stream()

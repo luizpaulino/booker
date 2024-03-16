@@ -6,6 +6,7 @@ import com.booker.location.dto.response.BuildingRoomResponse;
 import com.booker.location.persistence.entity.Building;
 import com.booker.location.persistence.entity.Location;
 import com.booker.location.persistence.repository.LocationRepository;
+import com.booker.shared.exception.models.BookerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,11 @@ public class BuildingService {
     private LocationRepository locationRepository;
     public BuildingResponse addBuilding(BuildingRequest buildingRequest, String locationId) {
 
-        Location location = locationRepository.findById(locationId).orElseThrow(IllegalArgumentException::new);
+        Location location = locationRepository.findById(locationId).orElseThrow(BookerException::new);
 
         String buildingName = buildingRequest.getName();
         if (location.getBuildings().stream().anyMatch(building -> building.getName().equals(buildingName))) {
-            throw new IllegalArgumentException("Building with name '" + buildingName + "' already exists in location.");
+            throw new BookerException("Building with name '" + buildingName + "' already exists in location.");
         }
 
         Building building = Building.fromBuildingRequest(buildingRequest);
@@ -37,24 +38,24 @@ public class BuildingService {
 
     public BuildingResponse getBuildingById(String locationId, String buildingId) {
         Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
+                .orElseThrow(() -> new BookerException("Location not found with id: " + locationId));
 
         Building building = location.getBuildings().stream()
                 .filter(b -> b.getId().equals(buildingId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Building not found with id: " + buildingId));
+                .orElseThrow(() -> new BookerException("Building not found with id: " + buildingId));
 
         return BuildingResponse.fromBuilding(building);
     }
 
     public BuildingResponse updateBuilding(BuildingRequest buildingRequest, String locationId, String buildingId) {
         Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
+                .orElseThrow(() -> new BookerException("Location not found with id: " + locationId));
 
         Building buildingToUpdate = location.getBuildings().stream()
                 .filter(b -> b.getId().equals(buildingId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Building not found with id: " + buildingId));
+                .orElseThrow(() -> new BookerException("Building not found with id: " + buildingId));
 
         if (!buildingRequest.getName().isBlank()) {
             buildingToUpdate.setName(buildingRequest.getName());
@@ -67,12 +68,12 @@ public class BuildingService {
 
     public void deleteBuilding(String locationId, String buildingId) {
         Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
+                .orElseThrow(() -> new BookerException("Location not found with id: " + locationId));
 
         Building buildingToDelete = location.getBuildings().stream()
                 .filter(b -> b.getId().equals(buildingId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Building not found with id: " + buildingId));
+                .orElseThrow(() -> new BookerException("Building not found with id: " + buildingId));
 
         location.getBuildings().remove(buildingToDelete);
 
@@ -81,7 +82,7 @@ public class BuildingService {
 
     public List<BuildingRoomResponse> listAllBuildingsByLocation(String locationId) {
         Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
+                .orElseThrow(() -> new BookerException("Location not found with id: " + locationId));
 
         return location.getBuildings().stream()
                 .map(BuildingRoomResponse::fromBuilding)

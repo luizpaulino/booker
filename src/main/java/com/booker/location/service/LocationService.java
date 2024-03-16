@@ -6,6 +6,7 @@ import com.booker.location.dto.response.LocationResponse;
 import com.booker.location.persistence.entity.Address;
 import com.booker.location.persistence.entity.Location;
 import com.booker.location.persistence.repository.LocationRepository;
+import com.booker.shared.exception.models.BookerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class LocationService {
     public LocationResponse addLocation(LocationRequest locationRequest) {
 
         locationRepository.findByName(locationRequest.getName()).ifPresent(location -> {
-            throw new IllegalArgumentException("Location with name " + locationRequest.getName() + " already exists");
+            throw new BookerException("Location with name " + locationRequest.getName() + " already exists");
         });
 
         Location location = locationRepository.save(Location.fromLocationRequest(locationRequest));
@@ -38,7 +39,7 @@ public class LocationService {
 
     public LocationResponse updateLocation(String id, LocationRequest locationRequest) {
         Location location = locationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + id));
+                .orElseThrow(() -> new BookerException("Location not found with id: " + id));
 
         Location locationUpdated = locationRepository.save(updateLocationData(location, locationRequest));
         return LocationResponse.fromLocation(locationUpdated);

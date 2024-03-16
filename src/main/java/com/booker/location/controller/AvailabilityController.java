@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Future;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class AvailabilityController {
 
     @GetMapping
     public ResponseEntity<List<Location>> getAvailability(
-            @RequestParam("checkInDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
-            @RequestParam("checkOutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate) {
+            @RequestParam("checkInDate") @DateTimeFormat(pattern = "yyyy-MM-dd") @Future LocalDate checkInDate,
+            @RequestParam("checkOutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") @Future LocalDate checkOutDate) {
 
         return ResponseEntity.ok(availabilityService.findAvailableRooms(checkInDate, checkOutDate));
     }

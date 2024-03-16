@@ -4,6 +4,7 @@ import com.booker.customer.dto.request.CustomerRequest;
 import com.booker.customer.dto.response.CustomerResponse;
 import com.booker.customer.persistence.entity.Customer;
 import com.booker.customer.persistence.repository.CustomerRepository;
+import com.booker.shared.exception.models.BookerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class CustomerService {
     public CustomerResponse addCustomer(CustomerRequest customerRequest) {
 
         customerRepository.findByEmail(customerRequest.getEmail()).ifPresent(location -> {
-            throw new IllegalArgumentException("Customer with email " + customerRequest.getEmail() + " already exists");
+            throw new BookerException("Customer with email " + customerRequest.getEmail() + " already exists");
         });
 
         validateDocumentNumber(customerRequest.getDocumentNumber(), customerRequest.getCountry());
@@ -35,14 +36,14 @@ public class CustomerService {
         }
 
         if (!documentNumber.matches("[A-Za-z0-9]+")) {
-            throw new IllegalArgumentException("Invalid passport number: " + documentNumber);
+            throw new BookerException("Invalid passport number: " + documentNumber);
         }
     }
 
     private void validateCPF(String cpf) {
         cpf = cpf.replaceAll("\\D", "");
         if (cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {
-            throw new IllegalArgumentException("Invalid CPF: " + cpf);
+            throw new BookerException("Invalid CPF: " + cpf);
         }
 
         int[] digits = cpf.chars().map(Character::getNumericValue).toArray();
@@ -62,13 +63,13 @@ public class CustomerService {
         int secondDigit = (mod < 2) ? 0 : (11 - mod);
 
         if (firstDigit != digits[9] || secondDigit != digits[10]) {
-            throw new IllegalArgumentException("Invalid CPF: " + cpf);
+            throw new BookerException("Invalid CPF: " + cpf);
         }
     }
 
     public CustomerResponse getCustomerById(String id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + id));
+                .orElseThrow(() -> new BookerException("Customer not found with id: " + id));
         return CustomerResponse.fromCustomer(customer);
     }
 
@@ -76,12 +77,12 @@ public class CustomerService {
         List<Customer> customers = customerRepository.findAll();
         return customers.stream()
                 .map(CustomerResponse::fromCustomer)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CustomerResponse updateCustomer(String id, CustomerRequest customerRequest) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + id));
+                .orElseThrow(() -> new BookerException("Customer not found with id: " + id));
 
         if (!customer.getFullName().isBlank()) {
             customer.setFullName(customerRequest.getFullName());

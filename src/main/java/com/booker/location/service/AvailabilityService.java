@@ -3,6 +3,7 @@ package com.booker.location.service;
 import com.booker.booking.persistence.entity.Booking;
 import com.booker.booking.persistence.entity.SelectedRoom;
 import com.booker.booking.persistence.repository.BookingRepository;
+import com.booker.location.model.RoomStatus;
 import com.booker.location.persistence.entity.Building;
 import com.booker.location.persistence.entity.Location;
 import com.booker.location.persistence.entity.Room;
@@ -43,7 +44,8 @@ public class AvailabilityService {
         for (Location location : allLocations) {
             for (Building building : location.getBuildings()) {
                 List<Room> availableRooms = building.getRooms().stream()
-                        .filter(room -> !bookedRoomIds.contains(room.getId()))
+                        .filter(room -> !bookedRoomIds.contains(room.getId())
+                                && room.getStatus().equals(RoomStatus.available.toString()))
                         .toList();
                 building.setRooms(availableRooms);
             }

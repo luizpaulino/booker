@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/v1/bookings")
+
 public class BookingController {
 
     private static final Logger logger = Logger.getLogger(CustomerController.class.getName());
@@ -26,12 +26,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingResponse> createBook(@RequestBody @Valid BookingRequest bookingRequest) {
         BookingResponse bookingResponse = bookingService.addBook(bookingRequest);
-        URI bookingUri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(bookingResponse.getId())
-                .toUri();
-        return ResponseEntity.created(bookingUri).body(bookingResponse);
+        return ResponseEntity.created(URI.create("/booker/v1/bookings/" + bookingResponse.getId())).body(bookingResponse);
     }
 
     @GetMapping

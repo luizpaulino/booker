@@ -69,6 +69,26 @@ public class RoomController {
         return ResponseEntity.ok(updatedRoom);
     }
 
+    @PostMapping("/{roomId}/status")
+    public ResponseEntity<Void> blockRoom(
+            @PathVariable String locationId,
+            @PathVariable String buildingId,
+            @PathVariable String roomId
+    ) {
+        roomService.blockRoom(locationId, buildingId, roomId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{roomId}/status")
+    public ResponseEntity<Void> unblockRoom(
+            @PathVariable String locationId,
+            @PathVariable String buildingId,
+            @PathVariable String roomId
+    ) {
+        roomService.unblockRoom(locationId, buildingId, roomId);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{roomId}")
     public ResponseEntity<Void> deleteRoom(
             @PathVariable String locationId,

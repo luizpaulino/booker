@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Future;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,10 +21,12 @@ public class BookingRequest {
     private String locationId;
 
     @NotNull
+    @Future
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkInDate;
 
     @NotNull
+    @Future
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkOutDate;
 

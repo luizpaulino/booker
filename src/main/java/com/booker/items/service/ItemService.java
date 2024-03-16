@@ -1,5 +1,6 @@
 package com.booker.items.service;
 
+import com.booker.shared.exception.models.BookerException;
 import org.springframework.stereotype.Service;
 
 import com.booker.items.dto.request.ItemRequest;
@@ -19,7 +20,7 @@ public class ItemService {
 
     public ItemResponse addItem(ItemRequest itemRequest) {
         itemRepository.findByDescription(itemRequest.getDescription()).ifPresent(location -> {
-            throw new IllegalArgumentException("Item with description " + itemRequest.getDescription() + " already exists");
+            throw new BookerException("Item with description " + itemRequest.getDescription() + " already exists");
         });
         Item item = itemRepository.save(Item.fromItemRequest(itemRequest));
         return ItemResponse.fromItem(item);
@@ -27,7 +28,7 @@ public class ItemService {
 
     public ItemResponse getItemById(String itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + itemId));
+                .orElseThrow(() -> new BookerException("Item not found with id: " + itemId));
         return ItemResponse.fromItem(item);
     }
 
@@ -35,12 +36,12 @@ public class ItemService {
         List<Item> items = itemRepository.findAll();
         return items.stream()
                 .map(ItemResponse::fromItem)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ItemResponse updateItem(String itemId, ItemRequest itemRequest) {
         itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + itemId));
+                .orElseThrow(() -> new BookerException("Item not found with id: " + itemId));
         Item updatedItem = Item.fromItemRequest(itemRequest);
         updatedItem.setId(itemId);
         Item savedItem = itemRepository.save(updatedItem);
